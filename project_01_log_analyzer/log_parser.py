@@ -10,7 +10,7 @@ class HardwareLogParser:
         """读取日志文件，逐行扫描，提取异常行"""
         self.error_records.clear()
 
-        with open(file_path, "r", encoding = "utf-8", error = "ignore") as f:
+        with open(file_path, "r", encoding = "utf-8", errors = "ignore") as f:
             lines = f.readlines()
 
         for line_no, raw_line in enumerate(lines, start = 1):
