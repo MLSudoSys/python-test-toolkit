@@ -31,7 +31,7 @@ class HardwareLogParser:
                     "line_number": line_no,
                     "log_content":raw_line.strip()
                 })
-            return self.error_records
+        return self.error_records
 
     def get_statistics(self):
         """返回统计信息"""
