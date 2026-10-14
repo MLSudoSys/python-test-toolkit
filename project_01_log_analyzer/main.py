@@ -34,4 +34,11 @@ def main():
     print("==== 执行结束 ====")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"程序运行异常：{e}")
+        import traceback
+        traceback.print_exc()
+    finally:
+        input("\n按回车键退出...")
