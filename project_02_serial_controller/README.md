@@ -12,9 +12,11 @@
 5.可将采集到的串口日志保存到本地日志文件
 6.无复杂GUI，控制台程序，产线自动化测试常用形态
 
-技术栈：python、pyserial、多线程
+技术栈：python、pyserial、多线程、curses
 
 ## 目录说明：
 main.py             #主程序入口
 serial_collector.py #串口采集主逻辑
+
+demo                #创建了一个模拟设备用于模拟下位机操作
 
