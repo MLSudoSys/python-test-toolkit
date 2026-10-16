@@ -3,14 +3,17 @@ import serial.tools.list_ports
 import threading
 import time
 from datetime import datetime
+import queue
+from typing import Optional
 
 class SerialCollector:
-    def __init__(self, port: str, baudrate: int = 115200, log_file = "serial_log.txt"):
+    def __init__(self, port: str, baudrate: int = 115200, log_file = "serial_log.txt", log_queue: Optional[queue.Queue] = None):
         self.port = port
         self.baudrate = baudrate
         self.log_file = log_file
         self.ser = None
         self.running = False    #控制读取线程启停
+        self.log_queue = log_queue
 
     def open_serial(self) -> bool:
         """打开串口"""
@@ -48,21 +51,28 @@ class SerialCollector:
                         continue
                     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     log_line = f"[{timestamp}] {line}"
-                    print(log_line)
+
                     f.write(log_line + "\n")
                     f.flush()
+                    if self.log_queue is not None:
+                        self.log_queue.put_nowait(log_line)
                 except Exception as e:
-                    print(f"读取异常：{e}")
+                    err_msg = f"读取异常：{e}"
+                    f.write(f"{datetime.now()} {err_msg}\n")
+                    if self.log_queue is not None:
+                        self.log_queue.put_nowait(err_msg)
                     time.sleep(0.2)
 
-    def send_cmd(self, cmd: str):
+    def send_cmd(self, cmd: str) -> str:
         """向下位硬件发送串口指令，自动追加换行"""
         if self.ser and self.ser.is_open:
             send_bytes = (cmd + "\r\n").encode("utf-8")
             self.ser.write(send_bytes)
-            print(f">>> 发送：{cmd}")
+            msg = f">>> 发送：{cmd}"
+            return msg
         else:
-            print("串口未打开，无法发送")
+            msg = "串口未打开，无法发送"
+            return msg
 
     def close(self):
         """关闭串口，停止线程"""
